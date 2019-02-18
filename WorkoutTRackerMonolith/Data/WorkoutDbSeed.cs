@@ -23,6 +23,12 @@ namespace WorkoutTRackerMonolith.Data
                     await context.SaveChangesAsync();
                 }
 
+                if (!context.Workouts.Any())
+                {
+                    context.Workouts.AddRange(GetSeedWorkouts());
+                    await context.SaveChangesAsync();
+                }
+
                 if (!context.Users.Any())
                 {
                     context.Users.Add(GetSeedUser());
@@ -33,6 +39,41 @@ namespace WorkoutTRackerMonolith.Data
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        static IEnumerable<Workout> GetSeedWorkouts()
+        {
+            return new List<Workout>
+            {
+                new Workout
+                {
+                    Name = "Candito Linear",
+                    WorkoutExercises = GetSeedWorkoutExercises()
+                }
+            };
+        }
+
+        static IEnumerable<WorkoutExercise> GetSeedWorkoutExercises()
+        {
+            return new List<WorkoutExercise>
+            {
+                new WorkoutExercise
+                {
+                    Exercise = new Exercise { Name= "Squat" },
+                    Order = 1,
+                    Optional = false,
+                    Sets = 3,
+                    Reps = 6
+                },
+                new WorkoutExercise
+                {
+                    Exercise = new Exercise { Name = "Deadlift" },
+                    Order = 2,
+                    Optional = false,
+                    Sets = 2,
+                    Reps = 6
+                }
+            };
         }
 
         static IEnumerable<Muscle> GetSeedMuscles()

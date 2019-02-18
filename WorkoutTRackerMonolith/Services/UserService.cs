@@ -29,9 +29,11 @@ namespace WorkoutTRackerMonolith.Services
         {
             var user = await _workoutDbContext.Users
                 .Include(u => u.Workouts)
+                    .ThenInclude(w => w.WorkoutExercises)
+                        .ThenInclude(e => e.Exercise)
                 .SingleOrDefaultAsync(u =>
                 u.Email.Equals(login.Email, StringComparison.CurrentCultureIgnoreCase) && HasGoodPassword(u, login.Password));
-
+            
             if (user == null)
             {
                 return null;
@@ -50,12 +52,15 @@ namespace WorkoutTRackerMonolith.Services
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             
-            return new UserModel
+            return new UserModel(user)
             {
-                Name = user.Name,
-                Token = tokenHandler.WriteToken(token),
-                Workouts = user.Workouts?.Select(w => new WorkoutModel(w)) ?? Enumerable.Empty<WorkoutModel>()
+                Token = tokenHandler.WriteToken(token)
             };
+        }
+
+        public async Task<UserModel> AddWorkoutToUser(long userId, long workoutId)
+        {
+            return null;
         }
 
         private bool HasGoodPassword(User user, string password)

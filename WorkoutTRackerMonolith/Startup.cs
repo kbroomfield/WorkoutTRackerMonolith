@@ -37,6 +37,7 @@ namespace WorkoutTRackerMonolith
             SetupJwtAuthentication(services);
 
             services.AddTransient<UserService>();
+            services.AddTransient<WorkoutService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
