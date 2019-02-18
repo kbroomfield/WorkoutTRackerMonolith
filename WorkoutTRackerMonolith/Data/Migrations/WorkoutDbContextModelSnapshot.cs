@@ -19,7 +19,7 @@ namespace WorkoutTRackerMonolith.Data.Migrations
                 .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Exercise", b =>
+            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Entities.Exercise", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
@@ -31,7 +31,7 @@ namespace WorkoutTRackerMonolith.Data.Migrations
                     b.ToTable("Exercises");
                 });
 
-            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Muscle", b =>
+            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Entities.Muscle", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
@@ -47,19 +47,42 @@ namespace WorkoutTRackerMonolith.Data.Migrations
                     b.ToTable("Muscles");
                 });
 
-            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Workout", b =>
+            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Entities.User", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Password");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Entities.Workout", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name");
 
+                    b.Property<long?>("UserId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Workouts");
                 });
 
-            modelBuilder.Entity("WorkoutTRackerMonolith.Models.WorkoutExercise", b =>
+            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Entities.WorkoutExercise", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
@@ -85,21 +108,28 @@ namespace WorkoutTRackerMonolith.Data.Migrations
                     b.ToTable("WorkoutExercises");
                 });
 
-            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Muscle", b =>
+            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Entities.Muscle", b =>
                 {
-                    b.HasOne("WorkoutTRackerMonolith.Models.Exercise")
+                    b.HasOne("WorkoutTRackerMonolith.Models.Entities.Exercise")
                         .WithMany("MusclesWorked")
                         .HasForeignKey("ExerciseId");
                 });
 
-            modelBuilder.Entity("WorkoutTRackerMonolith.Models.WorkoutExercise", b =>
+            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Entities.Workout", b =>
                 {
-                    b.HasOne("WorkoutTRackerMonolith.Models.Exercise", "Exercise")
+                    b.HasOne("WorkoutTRackerMonolith.Models.Entities.User")
+                        .WithMany("Workouts")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("WorkoutTRackerMonolith.Models.Entities.WorkoutExercise", b =>
+                {
+                    b.HasOne("WorkoutTRackerMonolith.Models.Entities.Exercise", "Exercise")
                         .WithMany()
                         .HasForeignKey("ExerciseId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("WorkoutTRackerMonolith.Models.Workout")
+                    b.HasOne("WorkoutTRackerMonolith.Models.Entities.Workout")
                         .WithMany("WorkoutExercises")
                         .HasForeignKey("WorkoutId");
                 });

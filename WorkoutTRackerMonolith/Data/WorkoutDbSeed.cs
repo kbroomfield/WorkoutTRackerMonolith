@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
-using WorkoutTRackerMonolith.Models;
+using WorkoutTRackerMonolith.Models.Entities;
+using Enumerable = System.Linq.Enumerable;
 
 namespace WorkoutTRackerMonolith.Data
 {
@@ -20,6 +22,12 @@ namespace WorkoutTRackerMonolith.Data
                     context.Muscles.AddRange(GetSeedMuscles());
                     await context.SaveChangesAsync();
                 }
+
+                if (!context.Users.Any())
+                {
+                    context.Users.Add(GetSeedUser());
+                    await context.SaveChangesAsync();
+                }
             }
             catch (Exception ex)
             {
@@ -34,6 +42,22 @@ namespace WorkoutTRackerMonolith.Data
                 new Muscle { Name = "Quads" },
                 new Muscle { Name = "Hamstrings" }
             };
+        }
+
+        static User GetSeedUser()
+        {
+            var passwordHasher = new PasswordHasher<User>();
+            
+            var user =  new User
+            {
+                Name = "kyle",
+                Email = "my@email.com",
+                Workouts = Enumerable.Empty<Workout>()
+            };
+
+            user.Password = passwordHasher.HashPassword(user, "MyPassword123!");
+
+            return user;
         }
     }
 }

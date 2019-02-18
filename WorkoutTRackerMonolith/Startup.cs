@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,7 +13,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using WorkoutTRackerMonolith.Data;
+using WorkoutTRackerMonolith.Services;
 
 namespace WorkoutTRackerMonolith
 {
@@ -28,8 +32,11 @@ namespace WorkoutTRackerMonolith
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            var dbConnectionString = Configuration.GetSection("DatabaseConnectionString").Value;
-            services.AddDbContext<WorkoutDbContext>(options => options.UseNpgsql(dbConnectionString));
+            
+            SetupDatabase(services);
+            SetupJwtAuthentication(services);
+
+            services.AddTransient<UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +53,36 @@ namespace WorkoutTRackerMonolith
             }
 
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseMvc();
+        }
+
+        private void SetupDatabase(IServiceCollection services)
+        {
+            var dbConnectionString = Configuration.GetSection("DatabaseConnectionString").Value;
+            services.AddDbContext<WorkoutDbContext>(options => options.UseNpgsql(dbConnectionString));
+        }
+
+        private void SetupJwtAuthentication(IServiceCollection services)
+        {
+            var key = Encoding.ASCII.GetBytes(Configuration.GetSection("SuperSecretJwtString").Value);
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
         }
     }
 }

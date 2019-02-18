@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace WorkoutTRackerMonolith.Models
+namespace WorkoutTRackerMonolith.Models.Entities
 {
     public class Exercise
     {

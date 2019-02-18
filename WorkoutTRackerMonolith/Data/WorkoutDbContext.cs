@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using WorkoutTRackerMonolith.Models;
+using WorkoutTRackerMonolith.Models.Entities;
 
 namespace WorkoutTRackerMonolith.Data
 {
@@ -11,5 +11,13 @@ namespace WorkoutTRackerMonolith.Data
         public DbSet<Workout> Workouts { get; set; }
         public DbSet<WorkoutExercise> WorkoutExercises { get; set; }
         public DbSet<Muscle> Muscles { get; set; }
+        public DbSet<User> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+        }
     }
 }
