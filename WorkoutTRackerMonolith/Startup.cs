@@ -33,6 +33,11 @@ namespace WorkoutTRackerMonolith
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
+            });
+            
             SetupDatabase(services);
             SetupJwtAuthentication(services);
 
@@ -54,8 +59,19 @@ namespace WorkoutTRackerMonolith
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
             app.UseAuthentication();
             app.UseMvc();
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+                }
+            });
         }
 
         private void SetupDatabase(IServiceCollection services)
