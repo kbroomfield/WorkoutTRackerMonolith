@@ -4,7 +4,14 @@
     "outDir": "../out-tsc/app",
     "baseUrl": "./",
     "module": "es2015",
-    "types": []
+    "types": [],
+    "paths": {
+      "@services/*": [ "app/core/services/*" ],
+      "@models/*": [ "app/core/models/*" ],
+      "@components/*": [ "app/core/components/*" ],
+      "@guards/*": [ "app/core/guards/*"],
+      "@interceptors/*": [ "app/core/interceptors/*" ]
+    }
   },
   "exclude": [
     "test.ts",
